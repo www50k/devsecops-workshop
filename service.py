@@ -54,6 +54,19 @@ def index():
     return render_template("index.html")
     # return render_template_string("<html><body><a href=\"/product/list\">product list</a></body></html>")
 
+
+@app.route("/api/product/hash", methods=["GET"])
+def getProductHash():
+    import hashlib
+    products = db.get_products(db_connection, 100, 0)
+    product_id = int(request.args.get('pid', 0))
+    if product_id == 0:
+        return "error, specify a product id", 500
+    if product_id > len(products):
+        return "invalid product id", 500
+    hash = hashlib.md5(products[product_id].name.encode('utf-8')).hexdigest()
+    return hash
+    
 # Your application should never run on all interfaces.
 # See https://docs.datadoghq.com/code_analysis/static_analysis_rules/python-flask/listen-all-interfaces/
 # Bind to localhost for development purposes and attach to the address 127.0.0.1
